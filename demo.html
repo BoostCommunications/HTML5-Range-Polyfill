@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Range test</title>
+    <style type="text/css" media="screen">
+        .fakeRange {
+            width: 200px;
+            background-color: #ccc;
+            border-radius: 10px
+        }
+        .fakeRangeHandle {
+            width: 20px;
+            height: 20px;
+            background-color: black;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<input type="range" min="-10" max="10" step="2" value="4" />
+<script src="range.js" type="text/javascript"></script>
+<script type="text/javascript">
+    document.getElementsByTagName('input')[0].addEventListener('change', function(evt) {
+        console.log(evt.target.value);
+    });
+</script>
+
+</body>
+</html>
