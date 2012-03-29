@@ -36,7 +36,6 @@
                 fakeRange.appendChild(fakeRangeBackground);
                 fakeRange.appendChild(fakeRangeHandle);
                 range.parentNode.insertBefore(fakeRange, range);
-                range.disabled = 'disabled';
                 range.style.display = 'none';
                 fakeRange.style.position = 'relative';
                 fakeRangeHandle.style.position = 'absolute';
