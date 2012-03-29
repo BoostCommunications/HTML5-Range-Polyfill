@@ -37,6 +37,7 @@
                 range.parentNode.insertBefore(fakeRange, range);
                 range.disabled = 'disabled';
                 range.style.display = 'none';
+                fakeRangeHandle.style.position = 'relative';
                 
                 var handleWidth = fakeRangeHandle.offsetWidth,
                     rangeWidth = fakeRange.offsetWidth;
@@ -67,40 +68,38 @@
                 {
                     start: 'touchstart',
                     move: 'touchmove',
-                    end: 'touchend',
-                    out: 'touchcancel'
+                    end: 'touchend'
                 } : {
                     start: 'mousedown',
                     move: 'mousemove',
-                    end: 'mouseup',
-                    cancel: 'mouseout'
+                    end: 'mouseup'
                 });
                 
                 var updateValue = function(evt) {
-                    var x = evt.offsetX;
+                    if (evt.touches.length) {
+                        evt = evt.touches[evt.touches.length - 1];
+                    }
+                    var x = evt.clientX - evt.target.offsetLeft;
                     if (evt.target.className !== 'fakeRange') {
-                        x += parseInt(evt.target.style.left, 10);
+                        x = evt.clientX - evt.target.parentNode.offsetLeft;
                     }
                     setValue((x - (handleWidth / 2)) / (rangeWidth - handleWidth) * maxValue);
                 };
                 
                 fakeRange.addEventListener(events.start, function(evt) {
+                    var currentEvt = evt;
                     var move = function(evt) {
+                        currentEvt = evt;
+                        evt.preventDefault();
                         updateValue(evt);
                     };
                     var end = function(evt) {
-                        updateValue(evt);
+                        updateValue(currentEvt);
                         fakeRange.removeEventListener(events.move, move);
                         fakeRange.removeEventListener(events.end, end);
-                        if (events.cancel) {
-                            fakeRange.removeEventListener(events.cancel, end);
-                        }
                     };
                     fakeRange.addEventListener(events.move, move, false);
                     fakeRange.addEventListener(events.end, end, false);
-                    if (events.cancel) {
-                        fakeRange.addEventListener(events.cancel, end, false);
-                    }
                 }, false);
             }(i));
         }
