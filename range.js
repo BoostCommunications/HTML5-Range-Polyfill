@@ -2,7 +2,7 @@
     var testRange = document.createElement('input');
     testRange.type = 'range';
     
-    if (testRange.type !== 'range') {
+    if (testRange.type !== 'ranges') {
         var inputs = document.getElementsByTagName('input'),
             ranges = [],
             i, il;
@@ -24,10 +24,11 @@
                     stepValue = range.getAttribute('step') || 1,
                     startValue = range.getAttribute('value') || 0;
                     
-                    maxValue = parseInt(maxValue, 10);
-                    minValue = parseInt(minValue, 10);
-                    stepValue = parseInt(stepValue, 10);
-                    startValue = parseInt(startValue, 10);
+                maxValue = parseInt(maxValue, 10);
+                minValue = parseInt(minValue, 10);
+                stepValue = parseInt(stepValue, 10);
+                startValue = parseInt(startValue, 10);
+                var prevValue = startValue;
     
                 fakeRange.className = 'fakeRange';
                 fakeRangeBg.className = 'fakeRangeBg';
@@ -51,14 +52,13 @@
                     if ((value - minValue) % stepValue !== 0) {
                         value = (Math.round((value - minValue) / stepValue) * stepValue) + minValue;
                     }
-                    fakeRangeHandle.style.left = ((value / maxValue) * (rangeWidth - handleWidth)) + 'px';
-                    range.value = value;
-                    if ('fireEvent' in range) {
-                        range.fireEvent('onchange');
-                    } else {
+                    fakeRangeHandle.style.left = (((value - minValue) / (maxValue - minValue)) * (rangeWidth - handleWidth)) + 'px';
+                    if (value !== prevValue) {
+                        range.value = value;
                         var evt = document.createEvent('HTMLEvents');
                         evt.initEvent('change', false, true);
                         range.dispatchEvent(evt);
+                        prevValue = value;
                     }
                 };
                 
@@ -76,14 +76,14 @@
                 });
                 
                 var updateValue = function(evt) {
-                    if (evt.touches.length) {
+                    if (evt.touches && evt.touches.length) {
                         evt = evt.touches[evt.touches.length - 1];
                     }
                     var x = evt.clientX - evt.target.offsetLeft;
                     if (evt.target.className !== 'fakeRange') {
                         x = evt.clientX - evt.target.parentNode.offsetLeft;
                     }
-                    setValue((x - (handleWidth / 2)) / (rangeWidth - handleWidth) * maxValue);
+                    setValue((x / (rangeWidth - handleWidth) * (maxValue - minValue)) + minValue);
                 };
                 
                 fakeRange.addEventListener(events.start, function(evt) {
