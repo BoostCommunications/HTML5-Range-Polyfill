@@ -2,7 +2,7 @@
     var testRange = document.createElement('input');
     testRange.type = 'range';
     
-    if (testRange.type !== 'ranges') {
+    if (testRange.type !== 'range') {
         var inputs = document.getElementsByTagName('input'),
             ranges = [],
             i, il;
