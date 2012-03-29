@@ -17,7 +17,7 @@
             (function(i) {
                 var range = ranges[i],
                     fakeRange = document.createElement('div'),
-                    fakeRangeBg = document.createElement('div'),
+                    fakeRangeBackground = document.createElement('div'),
                     fakeRangeHandle = document.createElement('div'),
                     maxValue = range.getAttribute('max') || 100,
                     minValue = range.getAttribute('min') || 0,
@@ -31,14 +31,18 @@
                 var prevValue = startValue;
     
                 fakeRange.className = 'fakeRange';
-                fakeRangeBg.className = 'fakeRangeBg';
+                fakeRangeBackground.className = 'fakeRangeBackground';
                 fakeRangeHandle.className = 'fakeRangeHandle';
-                fakeRange.appendChild(fakeRangeBg);
+                fakeRange.appendChild(fakeRangeBackground);
                 fakeRange.appendChild(fakeRangeHandle);
                 range.parentNode.insertBefore(fakeRange, range);
                 range.disabled = 'disabled';
                 range.style.display = 'none';
-                fakeRangeHandle.style.position = 'relative';
+                fakeRange.style.position = 'relative';
+                fakeRangeHandle.style.position = 'absolute';
+                fakeRangeHandle.style.top = 0;
+                fakeRangeBackground.style.position = 'absolute';
+                fakeRangeBackground.style.top = 0;
                 
                 var handleWidth = fakeRangeHandle.offsetWidth,
                     rangeWidth = fakeRange.offsetWidth;
@@ -52,11 +56,13 @@
                     if ((value - minValue) % stepValue !== 0) {
                         value = (Math.round((value - minValue) / stepValue) * stepValue) + minValue;
                     }
-                    fakeRangeHandle.style.left = (((value - minValue) / (maxValue - minValue)) * (rangeWidth - handleWidth)) + 'px';
+                    var newPosition = ((value - minValue) / (maxValue - minValue)) * (rangeWidth - handleWidth);
+                    fakeRangeHandle.style.left = newPosition + 'px';
+                    fakeRangeBackground.style.width = (newPosition + handleWidth / 2) + 'px';
                     if (value !== prevValue) {
                         range.value = value;
                         var evt = document.createEvent('HTMLEvents');
-                        evt.initEvent('change', false, true);
+                        evt.initEvent('change', true, true);
                         range.dispatchEvent(evt);
                         prevValue = value;
                     }
@@ -83,10 +89,11 @@
                     if (evt.target.className !== 'fakeRange') {
                         x = evt.clientX - evt.target.parentNode.offsetLeft;
                     }
-                    setValue((x / (rangeWidth - handleWidth) * (maxValue - minValue)) + minValue);
+                    setValue(((x - handleWidth / 2) / (rangeWidth - handleWidth) * (maxValue - minValue)) + minValue);
                 };
                 
                 fakeRange.addEventListener(events.start, function(evt) {
+                    evt.preventDefault();
                     var currentEvt = evt;
                     var move = function(evt) {
                         currentEvt = evt;
