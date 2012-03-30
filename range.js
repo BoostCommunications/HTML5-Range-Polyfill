@@ -9,7 +9,7 @@
         // Find all range inputs on page
         for (i = 0, il = inputs.length; i < il; i++) {
             var input = inputs[i];
-            if (inputs.getAttribute('type') === 'range') {
+            if (input.getAttribute('type') === 'range') {
                 (function(range) {
                     // Set up values and elements
                     var fakeRange = document.createElement('div'),
